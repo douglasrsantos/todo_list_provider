@@ -5,7 +5,7 @@ import 'package:todo_list_provider/app/exception/auth_exception.dart';
 import 'package:todo_list_provider/app/repositories/user/user_repository.dart';
 
 class UserRepositoryImpl implements UserRepository {
-  FirebaseAuth _firebaseAuth;
+  final FirebaseAuth _firebaseAuth;
 
   UserRepositoryImpl({required FirebaseAuth firebaseAuth})
       : _firebaseAuth = firebaseAuth;
@@ -14,7 +14,9 @@ class UserRepositoryImpl implements UserRepository {
   Future<User?> register(String email, String password) async {
     try {
       final userCredencial = await _firebaseAuth.createUserWithEmailAndPassword(
-          email: email, password: password);
+        email: email,
+        password: password,
+      );
 
       return userCredencial.user;
     } on FirebaseAuthException catch (e, s) {
@@ -23,7 +25,8 @@ class UserRepositoryImpl implements UserRepository {
             await _firebaseAuth.fetchSignInMethodsForEmail(email);
         if (loginTypes.contains('password')) {
           throw AuthException(
-              message: 'E-mail já utilizado, por favor escolha outro e-mail');
+            message: 'E-mail já utilizado, por favor escolha outro e-mail',
+          );
         } else {
           throw AuthException(
             message:
@@ -122,8 +125,18 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<void> googleLogout() async {
+  Future<void> logout() async {
     await GoogleSignIn().signOut();
     _firebaseAuth.signOut();
+  }
+
+  @override
+  Future<void> updateDisplayName(String name) async {
+    final user = _firebaseAuth.currentUser;
+
+    if (user != null) {
+      await user.updateDisplayName(name);
+      user.reload();
+    }
   }
 }
