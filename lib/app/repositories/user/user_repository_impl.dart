@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -20,6 +22,8 @@ class UserRepositoryImpl implements UserRepository {
 
       return userCredencial.user;
     } on FirebaseAuthException catch (e, s) {
+      print(e);
+      print(s);
       if (e.code == 'email-already-in-use') {
         final loginTypes =
             await _firebaseAuth.fetchSignInMethodsForEmail(email);
