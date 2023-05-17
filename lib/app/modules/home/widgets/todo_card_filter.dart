@@ -5,7 +5,7 @@ import 'package:todo_list_provider/app/models/task_filter_enum.dart';
 import 'package:todo_list_provider/app/models/total_tasks_model.dart';
 import 'package:todo_list_provider/app/modules/home/home_controller.dart';
 
-class TodoCardFilter extends StatelessWidget {
+class TodoCardFilter extends StatefulWidget {
   final String label;
   final TaskFilterEnum taskFilter;
   final TotalTasksModel? totalTasksModel;
@@ -19,9 +19,14 @@ class TodoCardFilter extends StatelessWidget {
     this.totalTasksModel,
   }) : super(key: key);
 
+  @override
+  State<TodoCardFilter> createState() => _TodoCardFilterState();
+}
+
+class _TodoCardFilterState extends State<TodoCardFilter> {
   double _getPercentFinish() {
-    final total = totalTasksModel?.totalTasks ?? 0.0;
-    final totalFinish = totalTasksModel?.totalTasksFinish ?? 0.1;
+    final total = widget.totalTasksModel?.totalTasks ?? 0.0;
+    final totalFinish = widget.totalTasksModel?.totalTasksFinish ?? 0.1;
 
     double percent = (totalFinish * 100) / total;
 
@@ -32,10 +37,25 @@ class TodoCardFilter extends StatelessWidget {
     }
   }
 
+  int get _numberOfTasks {
+    switch (widget.taskFilter) {
+      case TaskFilterEnum.today:
+        return context.select<HomeController, int>(
+            (controller) => controller.tasksToDoToday);
+      case TaskFilterEnum.tomorrow:
+        return context.select<HomeController, int>(
+            (controller) => controller.tasksToDoTomorrow);
+      case TaskFilterEnum.week:
+        return context.select<HomeController, int>(
+            (controller) => controller.tasksToDoWeek);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => context.read<HomeController>().findTasks(filter: taskFilter),
+      onTap: () =>
+          context.read<HomeController>().findTasks(filter: widget.taskFilter),
       borderRadius: BorderRadius.circular(30),
       child: Container(
         constraints: const BoxConstraints(
@@ -45,7 +65,7 @@ class TodoCardFilter extends StatelessWidget {
         margin: const EdgeInsets.only(right: 10),
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
-          color: selected ? context.primaryColor : Colors.white,
+          color: widget.selected ? context.primaryColor : Colors.white,
           border: Border.all(
             width: 1,
             color: Colors.grey.withOpacity(.8),
@@ -56,18 +76,18 @@ class TodoCardFilter extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${totalTasksModel?.totalTasks ?? 0} TAREFAS',
+              '$_numberOfTasks TAREFAS',
               style: context.titleStyle.copyWith(
                 fontSize: 10,
-                color: selected ? Colors.white : Colors.grey,
+                color: widget.selected ? Colors.white : Colors.grey,
               ),
             ),
             Text(
-              label,
+              widget.label,
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
-                color: selected ? Colors.white : Colors.black,
+                color: widget.selected ? Colors.white : Colors.black,
               ),
             ),
             TweenAnimationBuilder<double>(
@@ -78,11 +98,11 @@ class TodoCardFilter extends StatelessWidget {
               duration: const Duration(seconds: 1),
               builder: (context, value, child) {
                 return LinearProgressIndicator(
-                  backgroundColor: selected
+                  backgroundColor: widget.selected
                       ? context.primaryColorLight
                       : Colors.grey.shade300,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    selected ? Colors.white : context.primaryColor,
+                    widget.selected ? Colors.white : context.primaryColor,
                   ),
                   value: value,
                 );

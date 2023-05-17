@@ -17,6 +17,9 @@ class HomeController extends DefaultChangeNotifier {
   DateTime? initialDateOfWeek;
   DateTime? selectedDay;
   bool showFinishingTasks = false;
+  int tasksToDoToday = 0;
+  int tasksToDoTomorrow = 0;
+  int tasksToDoWeek = 0;
 
   HomeController({
     required TasksService tasksService,
@@ -105,6 +108,7 @@ class HomeController extends DefaultChangeNotifier {
   Future<void> refreshPage() async {
     await findTasks(filter: filterSelected);
     await loadTotalTasks();
+    updateTasksToDo();
     notifyListeners();
   }
 
@@ -121,5 +125,37 @@ class HomeController extends DefaultChangeNotifier {
   void showOrHideFinishingTasks() {
     showFinishingTasks = !showFinishingTasks;
     refreshPage();
+    updateTasksToDo();
+  }
+
+  void updateTasksToDo() {
+    if (!showFinishingTasks) {
+      if (todayTotalTasks != null) {
+        tasksToDoToday =
+            todayTotalTasks!.totalTasks - todayTotalTasks!.totalTasksFinish;
+      }
+
+      if (tomorrowTotalTasks != null) {
+        tasksToDoTomorrow = tomorrowTotalTasks!.totalTasks -
+            tomorrowTotalTasks!.totalTasksFinish;
+      }
+
+      if (weekTotalTasks != null) {
+        tasksToDoWeek =
+            weekTotalTasks!.totalTasks - weekTotalTasks!.totalTasksFinish;
+      }
+    } else {
+      if (todayTotalTasks != null) {
+        tasksToDoToday = todayTotalTasks!.totalTasks;
+      }
+
+      if (tomorrowTotalTasks != null) {
+        tasksToDoTomorrow = tomorrowTotalTasks!.totalTasks;
+      }
+
+      if (weekTotalTasks != null) {
+        tasksToDoWeek = weekTotalTasks!.totalTasks;
+      }
+    }
   }
 }

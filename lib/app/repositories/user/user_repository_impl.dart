@@ -101,7 +101,7 @@ class UserRepositoryImpl implements UserRepository {
         if (loginMethods.contains('password')) {
           throw AuthException(
               message:
-                  'Você utilizou o e-mail como cadastro no Lista de Tarefas, caso tenha esquecido sua senha,clique em esqueci minha senha');
+                  'Você utilizou o e-mail como cadastro no Lista de Tarefas, caso tenha esquecido sua senha, clique em esqueci minha senha');
         } else {
           final googleAuth = await googleUser.authentication;
           final firebaseCredential = GoogleAuthProvider.credential(
@@ -119,7 +119,7 @@ class UserRepositoryImpl implements UserRepository {
       print(s);
       if (e.code == 'account-exists-with-different-credential') {
         throw AuthException(message: '''
-        Login inválido, você se  registrou no Lista de Tarefas com os seguintes provedores:
+        Login inválido, você se registrou no Lista de Tarefas com os seguintes provedores:
         ${loginMethods?.join(',')}
         ''');
       } else {
