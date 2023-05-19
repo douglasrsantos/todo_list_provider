@@ -34,4 +34,13 @@ class TaskModel {
       finished: finished ?? this.finished,
     );
   }
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'id': id,
+      'description': description,
+      'dateTime': dateTime.toIso8601String(),
+      'finished': finished,
+    };
+  }
 }

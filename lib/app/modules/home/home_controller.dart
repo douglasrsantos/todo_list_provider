@@ -1,4 +1,4 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
+// ignore_for_file: public_member_api_docs, sort_constructors_first, avoid_print
 import 'package:todo_list_provider/app/core/notifier/default_change_notifier.dart';
 import 'package:todo_list_provider/app/models/task_filter_enum.dart';
 import 'package:todo_list_provider/app/models/task_model.dart';
@@ -51,6 +51,7 @@ class HomeController extends DefaultChangeNotifier {
       totalTasksFinish: weekTasks.tasks.where((task) => task.finished).length,
     );
 
+    updateTasksToDo();
     notifyListeners();
   }
 
@@ -125,7 +126,6 @@ class HomeController extends DefaultChangeNotifier {
   void showOrHideFinishingTasks() {
     showFinishingTasks = !showFinishingTasks;
     refreshPage();
-    updateTasksToDo();
   }
 
   void updateTasksToDo() {
@@ -157,5 +157,25 @@ class HomeController extends DefaultChangeNotifier {
         tasksToDoWeek = weekTotalTasks!.totalTasks;
       }
     }
+  }
+
+  Future<void> deleteTask(int id) async {
+    showLoadingAndResetState();
+    notifyListeners();
+
+    await _tasksService.deleteTask(id);
+
+    refreshPage();
+    hideLoading();
+  }
+
+  Future<void> deleteAll() async {
+    showLoadingAndResetState();
+    notifyListeners();
+
+    await _tasksService.deleteAll();
+
+    hideLoading();
+    notifyListeners();
   }
 }

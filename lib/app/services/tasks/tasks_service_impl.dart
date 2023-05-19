@@ -35,7 +35,7 @@ class TasksServiceImpl implements TasksService {
           startFilter.subtract(Duration(days: (startFilter.weekday - 1)));
     }
 
-    endFilter = startFilter.add(const Duration(days: 7));
+    endFilter = startFilter.add(const Duration(days: 6));
 
     final tasks = await _tasksRepository.findByPeriod(startFilter, endFilter);
 
@@ -49,4 +49,10 @@ class TasksServiceImpl implements TasksService {
   @override
   Future<void> checkOrUnCheckTask(TaskModel task) =>
       _tasksRepository.checkOrUncheckTask(task);
+
+  @override
+  Future<void> deleteTask(int taskId) => _tasksRepository.deleteTask(taskId);
+
+  @override
+  Future<void> deleteAll() => _tasksRepository.deleteAll();
 }
